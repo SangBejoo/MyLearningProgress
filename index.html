@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang Learning Progress Tracker</title>
+    <style>
+        :root {
+            --primary-color: #00ADD8;
+            --secondary-color: #2E2E2E;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+        }
+
+        .progress-section {
+            margin-bottom: 30px;
+        }
+
+        .week-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .topic-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .checkbox-container {
+            margin-right: 10px;
+        }
+
+        .resources-section {
+            margin-top: 10px;
+        }
+
+        .resources-section h4 {
+            margin: 5px 0;
+        }
+
+        .notes-section {
+            margin-top: 10px;
+        }
+
+        .notes-input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .save-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .save-btn:hover {
+            background-color: #008fb3;
+        }
+
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .statistics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Golang Learning Progress Tracker</h1>
+        <p>Track your 2-month learning journey</p>
+    </header>
+
+    <div class="statistics">
+        <div class="stat-card">
+            <h3>Overall Progress</h3>
+            <div class="stat-value" id="overall-progress">0%</div>
+        </div>
+        <div class="stat-card">
+            <h3>Topics Completed</h3>
+            <div class="stat-value" id="topics-completed">0/40</div>
+        </div>
+        <div class="stat-card">
+            <h3>Study Hours</h3>
+            <div class="stat-value" id="study-hours">0</div>
+        </div>
+    </div>
+
+    <div class="progress-section" id="weeks-container">
+        <!-- Weeks will be dynamically added here -->
+    </div>
+</div>
+
+<script>
+    const weeks = [
+        {
+            week: 1,
+            title: "Go Basics & Environment Setup",
+            topics: ["Go Installation and Setup", "Basic Syntax", "Variables and Data Types", "Control Structures", "Functions"],
+            resources: {
+                links: [
+                    {text: "Go Documentation - Getting Started", url: "https://golang.org/doc/"},
+                    {text: "Tour of Go", url: "https://tour.golang.org/"},
+                    {text: "Golang Basics for Beginners", url: "https://www.golangprograms.com/golang-tutorial.html"}
+                ],
+                tools: [
+                    {text: "Go Playground", url: "https://play.golang.org/"},
+                    {text: "Visual Studio Code", url: "https://code.visualstudio.com/"}
+                ],
+                advice: "Focus on understanding syntax and basic data structures as they’re foundational."
+            }
+        },
+        {
+            week: 2,
+            title: "Basic DSA & Go Fundamentals",
+            topics: ["Arrays and Slices", "Maps", "Basic Algorithms", "Time Complexity", "Space Complexity"],
+            resources: {
+                links: [
+                    {text: "GeeksforGeeks - Data Structures in Go", url: "https://www.geeksforgeeks.org/data-structures-in-golang/"},
+                    {text: "Time Complexity Guide - Big O Notation", url: "https://www.bigocheatsheet.com/"}
+                ],
+                tools: [
+                    {text: "LeetCode", url: "https://leetcode.com/"},
+                    {text: "HackerRank", url: "https://www.hackerrank.com/"}
+                ],
+                advice: "Learn how Go handles arrays, slices, and maps, and practice basic algorithms."
+            }
+        },
+        {
+            week: 3,
+            title: "Advanced DSA Implementation",
+            topics: ["Linked Lists", "Stacks and Queues", "Trees", "Graphs", "Sorting Algorithms"],
+            resources: {
+                links: [
+                    {text: "Data Structures in Go by GoDS", url: "https://github.com/emirpasic/gods"},
+                    {text: "MIT OpenCourseWare - Algorithms", url: "https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-006-introduction-to-algorithms-fall-2011/"}
+                ],
+                tools: [
+                    {text: "Go by Example", url: "https://gobyexample.com/"}
+                ],
+                advice: "Practice complex data structures like trees, graphs, and linked lists in Go."
+            }
+        },
+        {
+            week: 4,
+            title: "REST APIs & Database Basics",
+            topics: ["HTTP Fundamentals", "REST API Design", "Database Basics", "SQL Operations", "API Testing"],
+            resources: {
+                links: [
+                    {text: "RESTful API Tutorial", url: "https://restfulapi.net/"},
+                    {text: "PostgreSQL Tutorial", url: "https://www.postgresqltutorial.com/"}
+                ],
+                tools: [
+                    {text: "Postman", url: "https://www.postman.com/"},
+                    {text: "SQLite or PostgreSQL", url: "https://www.postgresql.org/"}
+                ],
+                advice: "Learn to design REST APIs and make CRUD operations with databases."
+            }
+        },
+        {
+            week: 5,
+            title: "Authentication & Middleware",
+            topics: ["Basic Auth", "JWT Implementation", "Middleware Concepts", "Security Best Practices", "Error Handling"],
+            resources: {
+                links: [
+                    {text: "OAuth 2.0 Guide", url: "https://www.digitalocean.com/community/tutorial_series/oauth"},
+                    {text: "JWT.io", url: "https://jwt.io/"}
+                ],
+                tools: [
+                    {text: "Golang JWT Package", url: "https://pkg.go.dev/github.com/dgrijalva/jwt-go"}
+                ],
+                advice: "Understanding security basics like JWT and middleware is essential to protect APIs."
+            }
+        },
+        {
+            week: 6,
+            title: "Concurrency & WebSockets",
+            topics: ["Goroutines", "Channels", "WebSocket Basics", "Real-time Communication", "Concurrent Patterns"],
+            resources: {
+                links: [
+                    {text: "Go Concurrency Patterns", url: "https://go.dev/doc/effective_go#concurrency"},
+                    {text: "WebSocket Guide", url: "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"}
+                ],
+                tools: [
+                    {text: "Gorilla WebSocket Library", url: "https://github.com/gorilla/websocket"}
+                ],
+                advice: "Use Go's goroutines and channels to build concurrent applications."
+            }
+        },
+        {
+            week: 7,
+            title: "Microservices Basics",
+            topics: ["Microservices Architecture", "Service Communication", "Docker Basics", "Service Discovery", "Load Balancing"],
+            resources: {
+                links: [
+                    {text: "Microservices Patterns", url: "https://microservices.io/patterns/index.html"},
+                    {text: "Docker - Getting Started", url: "https://docs.docker.com/get-started/"}
+                ],
+                tools: [
+                    {text: "Docker", url: "https://www.docker.com/"},
+                    {text: "Kubernetes Playground", url: "https://labs.play-with-k8s.com/"}
+                ],
+                advice: "Learn the fundamentals of Docker and microservices architecture."
+            }
+        },
+        {
+            week: 8,
+            title: "Advanced Backend & Project",
+            topics: ["System Design", "Performance Optimization", "Logging and Monitoring", "Final Project Planning", "Project Implementation"],
+            resources: {
+                links: [
+                    {text: "System Design Primer", url: "https://github.com/donnemartin/system-design-primer"},
+                    {text: "Go Performance Tips", url: "https://dave.cheney.net/high-performance-go"}
+                ],
+                tools: [
+                    {text: "Grafana", url: "https://grafana.com/"},
+                    {text: "Logrus", url: "https://github.com/sirupsen/logrus"}
+                ],
+                advice: "Apply performance optimizations and add monitoring for backend systems."
+            }
+        }
+    ];
+
+    function createWeekElement(week) {
+        const weekElement = document.createElement('div');
+        weekElement.className = 'week-container';
+
+        let topicsHtml = week.topics.map((topic, index) => `
+            <li class="topic-item">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="topic-${week.week}-${index}" onchange="updateProgress(${week.week})">
+                </div>
+                <label for="topic-${week.week}-${index}">${topic}</label>
+            </li>
+        `).join('');
+
+        let resourcesHtml = `
+            <div class="resources-section">
+                <h4>Resources:</h4>
+                <ul>
+                    ${week.resources.links.map(link => `<li><a href="${link.url}" target="_blank">${link.text}</a></li>`).join('')}
+                </ul>
+                <h4>Tools:</h4>
+                <ul>
+                    ${week.resources.tools.map(tool => `<li><a href="${tool.url}" target="_blank">${tool.text}</a></li>`).join('')}
+                </ul>
+                <h4>Advice:</h4>
+                <p>${week.resources.advice}</p>
+            </div>
+        `;
+
+        weekElement.innerHTML = `
+            <h2>Week ${week.week}: ${week.title}</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-week-${week.week}"></div>
+            </div>
+            <ul class="topic-list">${topicsHtml}</ul>
+            ${resourcesHtml}
+            <div class="notes-section">
+                <h3>Notes</h3>
+                <textarea class="notes-input" id="notes-${week.week}" placeholder="Add your notes for this week..."></textarea>
+                <button class="save-btn" onclick="saveNotes(${week.week})">Save Notes</button>
+            </div>
+        `;
+
+        return weekElement;
+    }
+
+    function updateProgress(weekNum) {
+        const weekTopics = document.querySelectorAll(`input[id^="topic-${weekNum}-"]`);
+        const completed = Array.from(weekTopics).filter(topic => topic.checked).length;
+        const progress = (completed / weekTopics.length) * 100;
+
+        document.getElementById(`progress-week-${weekNum}`).style.width = `${progress}%`;
+        updateOverallProgress();
+    }
+
+    function updateOverallProgress() {
+        const allTopics = document.querySelectorAll('input[type="checkbox"]');
+        const completedTopics = Array.from(allTopics).filter(topic => topic.checked).length;
+        const totalTopics = allTopics.length;
+        const overallProgress = (completedTopics / totalTopics) * 100;
+
+        document.getElementById('overall-progress').textContent = `${Math.round(overallProgress)}%`;
+        document.getElementById('topics-completed').textContent = `${completedTopics}/${totalTopics}`;
+        const studyHours = completedTopics * 5;
+        document.getElementById('study-hours').textContent = studyHours;
+    }
+
+    function saveNotes(weekNum) {
+        const notes = document.getElementById(`notes-${weekNum}`).value;
+        localStorage.setItem(`week-${weekNum}-notes`, notes);
+        alert('Notes saved successfully!');
+    }
+
+    function loadSavedData() {
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            const isChecked = localStorage.getItem(checkbox.id) === 'true';
+            checkbox.checked = isChecked;
+        });
+
+        weeks.forEach(week => {
+            const savedNotes = localStorage.getItem(`week-${week.week}-notes`);
+            if (savedNotes) {
+                document.getElementById(`notes-${week.week}`).value = savedNotes;
+            }
+        });
+
+        weeks.forEach(week => updateProgress(week.week));
+    }
+
+    window.onload = function() {
+        const container = document.getElementById('weeks-container');
+        weeks.forEach(week => {
+            container.appendChild(createWeekElement(week));
+        });
+        loadSavedData();
+    };
+</script>
+</body>
+</html>
