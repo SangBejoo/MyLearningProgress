@@ -310,7 +310,7 @@
         let topicsHtml = week.topics.map((topic, index) => `
             <li class="topic-item">
                 <div class="checkbox-container">
-                    <input type="checkbox" id="topic-${week.week}-${index}" onchange="updateProgress(${week.week})">
+                    <input type="checkbox" id="topic-${week.week}-${index}" onchange="updateProgress(${week.week}, ${index})">
                 </div>
                 <label for="topic-${week.week}-${index}">${topic}</label>
             </li>
@@ -348,12 +348,15 @@
         return weekElement;
     }
 
-    function updateProgress(weekNum) {
+    function updateProgress(weekNum, topicIndex) {
+        const topicCheckbox = document.getElementById(`topic-${weekNum}-${topicIndex}`);
+        localStorage.setItem(`topic-${weekNum}-${topicIndex}`, topicCheckbox.checked);
+
         const weekTopics = document.querySelectorAll(`input[id^="topic-${weekNum}-"]`);
         const completed = Array.from(weekTopics).filter(topic => topic.checked).length;
         const progress = (completed / weekTopics.length) * 100;
-
         document.getElementById(`progress-week-${weekNum}`).style.width = `${progress}%`;
+
         updateOverallProgress();
     }
 
@@ -376,9 +379,12 @@
     }
 
     function loadSavedData() {
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            const isChecked = localStorage.getItem(checkbox.id) === 'true';
-            checkbox.checked = isChecked;
+        weeks.forEach((week, weekIndex) => {
+            week.topics.forEach((_, topicIndex) => {
+                const checkboxId = `topic-${weekIndex + 1}-${topicIndex}`;
+                const isChecked = localStorage.getItem(checkboxId) === 'true';
+                document.getElementById(checkboxId).checked = isChecked;
+            });
         });
 
         weeks.forEach(week => {
@@ -388,7 +394,7 @@
             }
         });
 
-        weeks.forEach(week => updateProgress(week.week));
+        weeks.forEach(week => updateProgress(week.week, 0));
     }
 
     window.onload = function() {
